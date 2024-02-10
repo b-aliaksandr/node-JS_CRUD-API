@@ -64,6 +64,10 @@ export async function createRouter() {
 
     const route = dynamicRoutes.get(stringifyRouteKey({ url: findedEntityPath, method }));
 
+    if (!route) {
+      return null;
+    }
+
     return {...route, parameter: { ...route.parameter, value: parameterValue }};
   };
 
@@ -96,7 +100,11 @@ export async function createRouter() {
     }
 
     const dynamicRoute = findDynamicRoute({ url, method });
-    return dynamicRoute;
+    if (dynamicRoute) {
+      return dynamicRoute;
+    }
+
+    return null;
   };
 
   return {
