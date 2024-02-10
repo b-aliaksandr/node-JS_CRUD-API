@@ -12,7 +12,11 @@ export async function build() {
     const route = router.routing({ method, url });
 
     if (route) {
-      route.handler(req, res);
+      if (route.parameter) {
+        route.handler({ req, res }, route.parameter);
+      } else {
+        route.handler(req, res);
+      }
     } else {
       res.statusCode = 404;
       res.end(`"I apologize, I couldn't find what you were looking for."`);
