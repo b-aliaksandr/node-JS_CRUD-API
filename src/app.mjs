@@ -1,8 +1,10 @@
 import http from 'node:http';
 import { createRouter } from './router.mjs';
+import createMemoryDB, { DATA_TYPES, CONSTRAINTS } from './db/db.mjs';
 import usersRoutes from './users/routes.mjs';
 
 export async function build() {
+  const memoryDB = await createMemoryDB({ logger: process.stdout });
   const router = await createRouter();
   
   usersRoutes({ router });
@@ -29,6 +31,7 @@ export async function build() {
 
   return {
     ...serverAPI,
+    memoryDB,
     router,
   };
 };
