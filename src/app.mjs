@@ -2,6 +2,7 @@ import http from 'node:http';
 import { createRouter } from './router.mjs';
 import createMemoryDB, { DATA_TYPES, CONSTRAINTS } from './db/db.mjs';
 import usersRoutes from './users/routes.mjs';
+import { httpError } from './utils.mjs';
 
 export async function build() {
   const memoryDB = await createMemoryDB({ logger: process.stdout });
@@ -20,8 +21,7 @@ export async function build() {
         route.handler(req, res);
       }
     } else {
-      res.statusCode = 404;
-      res.end(`"I apologize, I couldn't find what you were looking for."`);
+      httpError(res, 404, `I apologize, I couldn't find what you were looking for.`);
     }
   });
 
