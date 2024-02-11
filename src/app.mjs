@@ -54,6 +54,7 @@ export async function build() {
 
   const serverAPI = {
     listen: server.listen.bind(server),
+    close: server.close.bind(server),
   };
 
   return {
