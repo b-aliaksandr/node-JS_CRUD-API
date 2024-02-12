@@ -1,0 +1,27 @@
+{
+  "name": "js_crud-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon",
+    "start:prod": "tsc && node ./dist/index.js",
+    "start:watch": "node --require ts-node/register --watch-path=./src ./src/index.ts",
+    "test": "node --require ts-node/register --test ./src/node-tests",
+    "test:watch": "node --require ts-node/register --watch --test ./src/node-tests",
+    "test:coverage": "npx c8 node --require ts-node/register --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/uuid": "^9.0.8",
+    "dotenv": "^16.4.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
