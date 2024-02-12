@@ -1,7 +1,9 @@
-import test, { describe, it } from 'node:test';
-import assert from 'node:assert';
-import { v4 as uuidv4, validate as validateUUID4 } from 'uuid';
-import { build } from '../../app.mjs';
+const test = require('node:test');
+const assert = require('node:assert');
+const { v4: uuidv4, validate: validateUUID4 } = require('uuid');
+const { build } = require('../../app');
+
+const { describe, it } = test;
 
 test('Users CRUD API', async () => {
   const port = 5000;

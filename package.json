@@ -6,9 +6,9 @@
   "scripts": {
     "start:dev": "nodemon",
     "start:prod": "tsc && node ./dist/index.js",
-    "test:watch": "node --watch --test ./src/node-tests",
-    "test": "node --test ./src/node-tests",
-    "test:coverage": "npx c8 node --test"
+    "test": "node --require ts-node/register --test ./src/node-tests",
+    "test:watch": "node --require ts-node/register --watch --test ./src/node-tests",
+    "test:coverage": "npx c8 node --require ts-node/register --test"
   },
   "keywords": [],
   "author": "",
