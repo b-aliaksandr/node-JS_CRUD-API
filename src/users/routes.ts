@@ -1,18 +1,22 @@
 import { v4 as uuidv4, validate as validateUUID } from 'uuid';
-import { receiveBody, httpError } from '../utils.mjs';
-import { CONSTRAINTS, WHERE_CONDITIONS } from '../db/db.mjs';
+import { receiveBody, httpError } from '../utils';
+import { CONSTRAINTS, WHERE_CONDITIONS } from '../db/db';
+import { ServerResponse, IncomingMessage } from 'http';
+import { User, UserData } from 'src/types/user.interface';
 
 export default async function (app) {
   app.router.route({
     method: 'GET',
     url: '/api/users',
-    handler: async (req, res) => {
+    handler: async (req: any, res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }) => {
       try {
-        const users = await app.memoryDB.select('users', '*');
+        const users: User[] = await app.memoryDB.select('users', '*');
         res.statusCode = 200;
         res.end(JSON.stringify(users));
       } catch (err) {
-        httpError(res, 500, err.message);
+        if (err instanceof Error) {
+          httpError(res, 500, err.message);
+        }
       }
     }
   });
@@ -20,14 +24,14 @@ export default async function (app) {
   app.router.route({
     method: 'GET',
     url: '/api/users/:id',
-    handler: async (client, parameter) => {
+    handler: async (client: { res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }; }, parameter: { value: string; }) => {
       try {
         const isValidId = validateUUID(parameter.value);
         if (!isValidId) {
           httpError(client.res, 400, `User ID:${parameter.value} is invalid.`);
         }
 
-        const users = await app.memoryDB.select(
+        const users: User[] = await app.memoryDB.select(
           'users',
           '*',
           [
@@ -39,15 +43,17 @@ export default async function (app) {
           ],
         );
 
-        const user = JSON.stringify(users.at(0));
+        const user = users.at(0);
         if (!user) {
           httpError(client.res, 404, `User with ID:${parameter.value} doesn't exist.`);
         }
 
         client.res.statusCode = 200;
-        client.res.end(user);
+        client.res.end(JSON.stringify(user));
       } catch (err) {
-        httpError(client.res, 500, err.message);
+        if (err instanceof Error) {
+          httpError(client.res, 500, err.message);
+        }
       }
     }
   });
@@ -55,25 +61,26 @@ export default async function (app) {
   app.router.route({
     method: 'POST',
     url: '/api/users',
-    handler: async (req, res) => {
+    handler: async (req: any, res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }) => {
       try {
         const body = await receiveBody(req);
-        const userData = JSON.parse(body.toString());
+        const userData: UserData = JSON.parse(body.toString());
 
-        const newUserData = await app.memoryDB.insert('users', {
+        const newUser: User = await app.memoryDB.insert('users', {
           id: uuidv4(),
           ...userData,
         });
-        const newUser = JSON.stringify(newUserData);
         if (newUser) {
           res.statusCode = 201;
-          res.end(newUser);
+          res.end(JSON.stringify(newUser));
         }
       } catch (err) {
-        if (err.message.includes(CONSTRAINTS.REQUIRED)) {
-          httpError(res, 404, err.message);
+        if (err instanceof Error) {
+          if (err.message.includes(CONSTRAINTS.REQUIRED)) {
+            httpError(res, 404, err.message);
+          }
+          httpError(res, 500, err.message);
         }
-        httpError(res, 500, err.message);
       }
     }
   });
@@ -81,14 +88,14 @@ export default async function (app) {
   app.router.route({
     method: 'PUT',
     url: '/api/users/:id',
-    handler: async (client, parameter) => {
+    handler: async (client: { res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }; req: any; }, parameter: { value: string; }) => {
       try {
         const isValidId = validateUUID(parameter.value);
         if (!isValidId) {
           httpError(client.res, 400, `User ID:${parameter.value} is invalid.`);
         }
 
-        const users = await app.memoryDB.select(
+        const users: User[] = await app.memoryDB.select(
           'users',
           '*',
           [
@@ -99,15 +106,15 @@ export default async function (app) {
             }
           ],
         );
-        const user = JSON.stringify(users.at(0));
+        const user = users.at(0);
         if (!user) {
           httpError(client.res, 404, `User with ID:${parameter.value} doesn't exist.`);
         }
 
         const body = await receiveBody(client.req);
-        const userData = JSON.parse(body.toString());
+        const userData: UserData = JSON.parse(body.toString());
 
-        const updatedUserData = await app.memoryDB.update('users', {
+        const updatedUser = await app.memoryDB.update('users', {
           ...userData,
         }, [
           {
@@ -117,13 +124,14 @@ export default async function (app) {
           }
         ]);
 
-        const updatedUser = JSON.stringify(updatedUserData);
         if (updatedUser) {
           client.res.statusCode = 200;
-          client.res.end(updatedUser);
+          client.res.end(JSON.stringify(updatedUser));
         }
       } catch (err) {
-        httpError(client.res, 500, err.message);
+        if (err instanceof Error) {
+          httpError(client.res, 500, err.message);
+        }
       }
     }
   });
@@ -131,14 +139,14 @@ export default async function (app) {
   app.router.route({
     method: 'DELETE',
     url: '/api/users/:id',
-    handler: async (client, parameter) => {
+    handler: async (client: { res: ServerResponse<IncomingMessage> & { req: IncomingMessage; }; }, parameter: { value: string; }) => {
       try {
         const isValidId = validateUUID(parameter.value);
         if (!isValidId) {
           httpError(client.res, 400, `User ID:${parameter.value} is invalid.`);
         }
 
-        const users = await app.memoryDB.select(
+        const users: User[] | [] = await app.memoryDB.select(
           'users',
           '*',
           [
@@ -168,7 +176,9 @@ export default async function (app) {
         client.res.statusCode = 204;
         client.res.end();
       } catch (err) {
-        httpError(res, 500, err.message);
+        if (err instanceof Error) {
+          httpError(client.res, 500, err.message);
+        }
       }
     }
   });

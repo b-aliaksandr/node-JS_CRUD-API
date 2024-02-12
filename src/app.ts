@@ -1,8 +1,8 @@
 import http from 'node:http';
-import { createRouter } from './router.mjs';
-import createMemoryDB, { DATA_TYPES, CONSTRAINTS } from './db/db.mjs';
-import usersRoutes from './users/routes.mjs';
-import { httpError } from './utils.mjs';
+import { createRouter } from './router';
+import createMemoryDB, { DATA_TYPES, CONSTRAINTS } from './db/db';
+import usersRoutes from './users/routes';
+import { httpError } from './utils';
 
 export async function build() {
   const memoryDB = await createMemoryDB({ logger: process.stdout });
@@ -32,7 +32,9 @@ export async function build() {
       },
     ]);
   } catch (err) {
-    throw new Error(`memoryDB: ${err.message}`);
+    if (err instanceof Error) {
+      throw new Error(`memoryDB: ${err.message}`);
+    }
   }
 
   usersRoutes({ router, memoryDB });

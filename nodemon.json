@@ -1,0 +1,10 @@
+{
+  "exec": "ts-node src/index.ts",
+  "events": {
+    "start": "cls"
+  },
+
+  "watch": ["src"],
+  "ignore": ["src/**/*.test.js"],
+  "ext": "ts"
+}

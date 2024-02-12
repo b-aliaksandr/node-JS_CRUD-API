@@ -53,7 +53,7 @@ export default async function createMemoryDB({ logger }) {
     // validating
     columns.forEach(({ name, dataType, constraints }) => {
       if (tableStructure.has(name)) {
-        throw new Error(`Table ${name} already exists.`);
+        throw new Error(`Column ${name} already exists.`);
       }
       if (!DATA_TYPES[dataType]) {
         throw new Error(`Invalid data type. ${dataType}`);

@@ -11,12 +11,18 @@ const parseRouteKey = (key) => {
   return key.split(routeKeySeparator);
 };
 
+type InitializeRouteOptions = {
+  method: string;
+  url: string;
+  handler: () => any;
+};
+
 export async function createRouter() {
   const routesEntities = new Set();
   const staticRoutes = new Map();
   const dynamicRoutes = new Map();
 
-  const initializeRoute = (options) => {
+  const initializeRoute = (options: InitializeRouteOptions) => {
     const { method, url, handler } = options;
     let parameter = null;
 
@@ -52,7 +58,7 @@ export async function createRouter() {
     let parameterValue = null;
     for (const entity of entities.toReversed()) {
       if (isFindedParameter) {
-        const entityIndex = entities.findIndex((item) => item === entity);
+        const entityIndex = entities.findIndex((item: string) => item === entity);
         parameterValue = entities.at(entityIndex + 1);
         findedEntityPath = entities.slice(0, entityIndex + 1).join('/').concat('/');
         break;

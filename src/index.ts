@@ -1,12 +1,11 @@
 import dotenv from 'dotenv';
-import { build } from './app.mjs';
+import { build } from './app';
 import { stdout } from 'node:process';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || '127.0.0.1';
-
 
 const main = async () => {
   const app = await build();
@@ -19,4 +18,6 @@ const main = async () => {
   });
 };
 
-main();
+main().catch((err) => {
+  stdout.write(err.message);
+});
